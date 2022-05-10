@@ -5,7 +5,7 @@ import ru.netology.nmedia.dto.Post
 
 class PostRepositoryInMemoryImpl : PostRepository {
 
-    private var nextId = 1L
+    private var nextId = 10L
 
     override val data: MutableLiveData<List<Post>>
 
@@ -19,6 +19,7 @@ class PostRepositoryInMemoryImpl : PostRepository {
                 published = "23 сентября в 10:12",
                 likedByMe = false,
                 likesAmount = 589,
+                sharedByMe = false,
                 sharesAmount = 42,
                 viewsAmount = 0
             ),
@@ -30,6 +31,7 @@ class PostRepositoryInMemoryImpl : PostRepository {
                 published = "22 сентября в 10:14",
                 likedByMe = false,
                 likesAmount = 56456,
+                sharedByMe = false,
                 sharesAmount = 453,
                 viewsAmount = 0
             ),
@@ -41,6 +43,7 @@ class PostRepositoryInMemoryImpl : PostRepository {
                 published = "22 сентября в 10:12",
                 likedByMe = false,
                 likesAmount = 58,
+                sharedByMe = false,
                 sharesAmount = 63,
                 viewsAmount = 0
             ),
@@ -52,6 +55,7 @@ class PostRepositoryInMemoryImpl : PostRepository {
                 published = "21 сентября в 10:12",
                 likedByMe = false,
                 likesAmount = 4582,
+                sharedByMe = false,
                 sharesAmount = 4835,
                 viewsAmount = 0
             ),
@@ -63,6 +67,7 @@ class PostRepositoryInMemoryImpl : PostRepository {
                 published = "20 сентября в 10:14",
                 likedByMe = false,
                 likesAmount = 452,
+                sharedByMe = false,
                 sharesAmount = 135,
                 viewsAmount = 0
             ),
@@ -74,6 +79,7 @@ class PostRepositoryInMemoryImpl : PostRepository {
                 published = "19 сентября в 14:12",
                 likedByMe = false,
                 likesAmount = 78,
+                sharedByMe = false,
                 sharesAmount = 366,
                 viewsAmount = 0
             ),
@@ -85,6 +91,7 @@ class PostRepositoryInMemoryImpl : PostRepository {
                 published = "19 сентября в 10:24",
                 likedByMe = false,
                 likesAmount = 473,
+                sharedByMe = false,
                 sharesAmount = 287,
                 viewsAmount = 0
             ),
@@ -96,6 +103,7 @@ class PostRepositoryInMemoryImpl : PostRepository {
                 published = "18 сентября в 10:12",
                 likedByMe = false,
                 likesAmount = 154,
+                sharedByMe = false,
                 sharesAmount = 75,
                 viewsAmount = 0
             ),
@@ -107,6 +115,7 @@ class PostRepositoryInMemoryImpl : PostRepository {
                 published = "21 мая в 18:36",
                 likedByMe = false,
                 likesAmount = 1399,
+                sharedByMe = false,
                 sharesAmount = 999,
                 viewsAmount = 0
             ),
@@ -130,7 +139,7 @@ class PostRepositoryInMemoryImpl : PostRepository {
 
     override fun shareById(id: Long) {
         data.value =
-            posts.map { if (it.id != id) it else it.copy(sharesAmount = it.sharesAmount + 1) }
+            posts.map { if (it.id != id) it else it.copy(sharedByMe = true, sharesAmount = it.sharesAmount + 1) }
     }
 
     override fun removeById(id: Long) {

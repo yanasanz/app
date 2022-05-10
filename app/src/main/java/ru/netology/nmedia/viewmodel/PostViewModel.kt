@@ -23,6 +23,7 @@ class PostViewModel : ViewModel(), PostInteractionListener {
             published = "",
             likedByMe = false,
             likesAmount = 0,
+            sharedByMe = false,
             sharesAmount = 0,
             viewsAmount = 0
         )

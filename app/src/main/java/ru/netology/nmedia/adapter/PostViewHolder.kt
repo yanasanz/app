@@ -51,11 +51,10 @@ class PostViewHolder(
             avatar.setImageResource(R.drawable.post_avatar_drawable)
             published.text = post.published
             content.text = post.content
-            like.setImageResource(
-                if (post.likedByMe) R.drawable.ic_liked_24 else R.drawable.ic_like_24
-            )
-            likesAmount.text = displayCount(post.likesAmount)
-            sharesAmount.text = displayCount(post.sharesAmount)
+            like.isChecked = post.likedByMe
+            like.text = displayCount(post.likesAmount)
+            share.isChecked = post.sharedByMe
+            share.text = displayCount(post.sharesAmount)
         }
     }
 }
