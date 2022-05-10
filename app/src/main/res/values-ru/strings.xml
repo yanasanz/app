@@ -7,4 +7,10 @@
     <string name="like">Поставить лайк</string>
     <string name="share">Поделиться</string>
     <string name="views">Количество просмотров</string>
+    <string name="remove_post_action">Удалить</string>
+    <string name="edit_post_action">Изменить</string>
+    <string name="post_content_hint">Содержание поста</string>
+    <string name="edit_title">Редактирование</string>
+    <string name="cancel_edit_content">Отмена редактирования</string>
+    <string name="save_post">Сохранить пост</string>
 </resources>
