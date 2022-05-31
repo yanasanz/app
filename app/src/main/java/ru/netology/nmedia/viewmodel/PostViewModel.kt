@@ -6,32 +6,38 @@ import ru.netology.nmedia.adapter.PostInteractionListener
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.repository.*
 
+private val empty = Post(
+    id = 0L,
+    avatar = null,
+    author = "",
+    content = "",
+    published = "",
+    video = "",
+    likedByMe = false,
+    likesAmount = 0,
+    sharedByMe = false,
+    sharesAmount = 0,
+    viewsAmount = 0
+)
+
 class PostViewModel : ViewModel(), PostInteractionListener {
     private val repository: PostRepository = PostRepositoryInMemoryImpl()
-    val data by repository::data
+    val data = repository.getAll()
+    val edited = MutableLiveData(empty)
 
-    val editPost = MutableLiveData<Post?>()
-
-    fun onSaveButtonClicked(postContent: String) {
-        val updatedPost = editPost.value?.copy(
-            content = postContent
-        ) ?: Post(
-            id = 0L,
-            avatar = null,
-            author = "",
-            content = postContent,
-            published = "",
-            likedByMe = false,
-            likesAmount = 0,
-            sharedByMe = false,
-            sharesAmount = 0,
-            viewsAmount = 0
-        )
-        repository.save(updatedPost)
-        editPost.value = null
+    fun save(content: String) {
+        val text = content.trim()
+        if (edited.value?.content == text) {
+            return
+        }
+        edited.value?.let {
+            repository.save(it.copy(content = text))
+        }
+        edited.value = empty
     }
 
     // region PostInteractionListener implementation
+
     override fun onLike(post: Post) {
         repository.likeById(post.id)
     }
@@ -45,11 +51,15 @@ class PostViewModel : ViewModel(), PostInteractionListener {
     }
 
     override fun onEdit(post: Post) {
-        editPost.value = post
+        edited.value = post
     }
 
     override fun onCancel() {
-        editPost.value = null
+        edited.value = null
+    }
+
+    override fun onWatch(post: Post) {
+        repository.watchVideo(post)
     }
 
     // endregion PostInteractionListener

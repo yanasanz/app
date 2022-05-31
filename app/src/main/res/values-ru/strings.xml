@@ -13,4 +13,10 @@
     <string name="edit_title">Редактирование</string>
     <string name="cancel_edit_content">Отмена редактирования</string>
     <string name="save_post">Сохранить пост</string>
+    <string name="error_empty_content">Текст не найден</string>
+    <string name="save_content">Сохранить</string>
+    <string name="new_content">Новый пост</string>
+    <string name="video_link">Ссылка на видео</string>
+    <string name="chooser_share_post">Поделиться</string>
+    <string name="watch_video">Смотреть видео</string>
 </resources>
