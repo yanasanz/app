@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:layout_marginTop="@dimen/common_spacing"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <androidx.appcompat.widget.AppCompatEditText
+        android:id="@+id/edit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:hint="@string/post_content_hint"
+        android:importantForAutofill="no"
+        android:inputType="textMultiLine"
+        android:padding="@dimen/common_spacing" />
+
+    <com.google.android.material.bottomappbar.BottomAppBar
+        android:id="@+id/footer"
+        android:layout_width="match_parent"
+        android:layout_height="?actionBarSize"
+        android:layout_gravity="bottom"
+        app:fabAlignmentMode="center"
+        app:hideOnScroll="true"
+        style="@style/Widget.MaterialComponents.BottomAppBar.Colored"
+        tools:ignore="BottomAppBar" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/ok"
+        android:layout_width="wrap_content"
+        android:layout_height="?attr/actionBarSize"
+        android:clickable="true"
+        android:focusable="true"
+        app:layout_anchor="@id/footer"
+        app:srcCompat="@drawable/ic_baseline_check_48"
+        android:contentDescription="@string/save_content" />
+
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
