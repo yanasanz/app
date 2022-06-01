@@ -1,5 +1,6 @@
 package ru.netology.nmedia.adapter
 
+import android.view.View
 import android.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
 import ru.netology.nmedia.R
@@ -42,6 +43,12 @@ class PostViewHolder(
         binding.menu.setOnClickListener {
             popupMenu.show()
         }
+        binding.video.setOnClickListener {
+            listener.onWatch(post)
+        }
+        binding.playButton.setOnClickListener {
+            listener.onWatch(post)
+        }
     }
 
     fun bind(post: Post) {
@@ -51,6 +58,10 @@ class PostViewHolder(
             avatar.setImageResource(R.drawable.post_avatar_drawable)
             published.text = post.published
             content.text = post.content
+            if (post.video.contains("youtu")) {
+                video.setImageResource(R.drawable.video_background)
+                group.visibility = View.VISIBLE
+            } else {group.visibility = View.GONE}
             like.isChecked = post.likedByMe
             like.text = displayCount(post.likesAmount)
             share.isChecked = post.sharedByMe

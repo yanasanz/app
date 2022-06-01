@@ -8,4 +8,5 @@ interface PostInteractionListener {
     fun onRemove(post: Post)
     fun onEdit(post: Post)
     fun onCancel()
+    fun onWatch(post: Post)
 }
