@@ -56,7 +56,6 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onWatch(post: Post) {
-                viewModel.onWatch(post)
                 val intent = Intent(Intent.ACTION_VIEW, Uri.parse(post.video))
                 startActivity(intent)
             }

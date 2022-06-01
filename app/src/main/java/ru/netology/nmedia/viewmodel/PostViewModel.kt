@@ -20,7 +20,7 @@ private val empty = Post(
     viewsAmount = 0
 )
 
-class PostViewModel : ViewModel(), PostInteractionListener {
+class PostViewModel : ViewModel() {
     private val repository: PostRepository = PostRepositoryInMemoryImpl()
     val data = repository.getAll()
     val edited = MutableLiveData(empty)
@@ -36,31 +36,23 @@ class PostViewModel : ViewModel(), PostInteractionListener {
         edited.value = empty
     }
 
-    // region PostInteractionListener implementation
-
-    override fun onLike(post: Post) {
+    fun onLike(post: Post) {
         repository.likeById(post.id)
     }
 
-    override fun onShare(post: Post) {
+    fun onShare(post: Post) {
         repository.shareById(post.id)
     }
 
-    override fun onRemove(post: Post) {
+    fun onRemove(post: Post) {
         repository.removeById(post.id)
     }
 
-    override fun onEdit(post: Post) {
+    fun onEdit(post: Post) {
         edited.value = post
     }
 
-    override fun onCancel() {
+    fun onCancel() {
         edited.value = null
     }
-
-    override fun onWatch(post: Post) {
-        repository.watchVideo(post)
-    }
-
-    // endregion PostInteractionListener
 }

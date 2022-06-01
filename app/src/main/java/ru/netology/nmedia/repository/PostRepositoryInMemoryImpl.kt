@@ -15,7 +15,7 @@ class PostRepositoryInMemoryImpl : PostRepository {
             author = "Нетология. Университет интернет-профессий будущего",
             content = "Освоение новой профессии - это не только открывающиеся возможности и перспективы, но и настоящий вызов самому себе. Приходится выходить из зоны комфорта и перестраивать привычный образ жизни, менять распорядок дня, искать время для занятий, быть готовым к возможным неудачам в начале пути. В блоге рассказали, как избежать стресса на курсах профпереподготовки -> http://netolo.gy/fPD",
             published = "23 сентября в 10:12",
-            video = "",
+            video = "uiohob",
             likedByMe = false,
             likesAmount = 589,
             sharedByMe = false,
@@ -168,13 +168,6 @@ class PostRepositoryInMemoryImpl : PostRepository {
         }
         posts = posts.map {
             if (it.id != post.id) it else it.copy(content = post.content)
-        }
-        data.value = posts
-    }
-
-    override fun watchVideo(post: Post) {
-        posts.map {
-            if (!it.video.contains("youtu")) it else it.copy(video = "")
         }
         data.value = posts
     }
