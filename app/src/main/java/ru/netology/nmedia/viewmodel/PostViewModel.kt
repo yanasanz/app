@@ -1,17 +1,20 @@
 package ru.netology.nmedia.viewmodel
 
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import ru.netology.nmedia.adapter.PostInteractionListener
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.repository.*
+import java.text.DateFormat
 
 private val empty = Post(
     id = 0L,
     avatar = null,
-    author = "",
+    author = "Нетология",
     content = "",
-    published = "",
+    published = "${DateFormat.getDateTimeInstance().format(System.currentTimeMillis())}",
     video = "",
     likedByMe = false,
     likesAmount = 0,
@@ -20,8 +23,8 @@ private val empty = Post(
     viewsAmount = 0
 )
 
-class PostViewModel : ViewModel() {
-    private val repository: PostRepository = PostRepositoryInMemoryImpl()
+class PostViewModel(application: Application) : AndroidViewModel(application) {
+    private val repository: PostRepository = PostRepositoryFileImpl(application)
     val data = repository.getAll()
     val edited = MutableLiveData(empty)
 
