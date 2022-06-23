@@ -19,12 +19,12 @@ class PostViewHolder(
             inflate(R.menu.options_post)
             setOnMenuItemClickListener { menuItem ->
                 when (menuItem.itemId) {
-                    R.id.remove -> {
-                        listener.onRemove(post)
-                        true
-                    }
                     R.id.edit -> {
                         listener.onEdit(post)
+                        true
+                    }
+                    R.id.remove -> {
+                        listener.onRemove(post)
                         true
                     }
                     else -> false
@@ -48,6 +48,15 @@ class PostViewHolder(
         }
         binding.playButton.setOnClickListener {
             listener.onWatch(post)
+        }
+        binding.avatar.setOnClickListener{
+            listener.onTapContent(post)
+        }
+        binding.author.setOnClickListener{
+            listener.onTapContent(post)
+        }
+        binding.content.setOnClickListener{
+            listener.onTapContent(post)
         }
     }
 
@@ -75,7 +84,7 @@ private fun displayCount(count: Int): String {
         in 0..999 -> count.toString()
         in 1000..9999 -> "${count / 1000}.${count / 100 % 10}K"
         in 10000..999999 -> "${count / 1000}K"
-        in 1000000..2147483647 -> "${count / 1000000}.${count / 100000 % 10}М"
+        in 1000000..2147483647 -> "${count / 1000000}.${count / 100000 % 10}Рњ"
         else -> "Amount is too big"
     }
 }
