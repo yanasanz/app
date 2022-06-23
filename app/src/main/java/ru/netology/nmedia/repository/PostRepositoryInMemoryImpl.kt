@@ -171,8 +171,4 @@ class PostRepositoryInMemoryImpl : PostRepository {
         }
         data.value = posts
     }
-
-    private companion object {
-        private const val NEW_POST_ID = 0L
-    }
 }
