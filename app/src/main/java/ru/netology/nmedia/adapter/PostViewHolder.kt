@@ -49,13 +49,7 @@ class PostViewHolder(
         binding.playButton.setOnClickListener {
             listener.onWatch(post)
         }
-        binding.avatar.setOnClickListener{
-            listener.onTapContent(post)
-        }
-        binding.author.setOnClickListener{
-            listener.onTapContent(post)
-        }
-        binding.content.setOnClickListener{
+        binding.root.setOnClickListener{
             listener.onTapContent(post)
         }
     }
@@ -70,7 +64,9 @@ class PostViewHolder(
             if (post.video.contains("youtu")) {
                 video.setImageResource(R.drawable.video_background)
                 group.visibility = View.VISIBLE
-            } else {group.visibility = View.GONE}
+            } else {
+                group.visibility = View.GONE
+            }
             like.isChecked = post.likedByMe
             like.text = displayCount(post.likesAmount)
             share.isChecked = post.sharedByMe
