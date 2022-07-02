@@ -49,9 +49,7 @@ class PostRepositorySharedPrefsImpl(context: Context) : PostRepository {
     }
 
     override fun removeById(id: Long) {
-        posts = posts.map {
-            if (it.id != id) it else it.copy(isDeleted = true)
-        }.filterNot { it.isDeleted }
+        posts = posts.filter { it.id != id }
         data.value = posts
         sync()
     }

@@ -152,10 +152,8 @@ class PostRepositoryInMemoryImpl : PostRepository {
     }
 
     override fun removeById(id: Long) {
-        posts = posts.map {
-            if(it.id != id) it else it.copy (isDeleted = true)
-        }
-        data.value = posts.filterNot { it.isDeleted }
+        posts = posts.filter { it.id != id }
+        data.value = posts
     }
 
     override fun save(post: Post) {
