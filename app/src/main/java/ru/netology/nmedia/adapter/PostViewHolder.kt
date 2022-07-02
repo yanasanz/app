@@ -19,12 +19,12 @@ class PostViewHolder(
             inflate(R.menu.options_post)
             setOnMenuItemClickListener { menuItem ->
                 when (menuItem.itemId) {
-                    R.id.remove -> {
-                        listener.onRemove(post)
-                        true
-                    }
                     R.id.edit -> {
                         listener.onEdit(post)
+                        true
+                    }
+                    R.id.remove -> {
+                        listener.onRemove(post)
                         true
                     }
                     else -> false
@@ -49,6 +49,9 @@ class PostViewHolder(
         binding.playButton.setOnClickListener {
             listener.onWatch(post)
         }
+        binding.root.setOnClickListener{
+            listener.onTapContent(post)
+        }
     }
 
     fun bind(post: Post) {
@@ -61,7 +64,9 @@ class PostViewHolder(
             if (post.video.contains("youtu")) {
                 video.setImageResource(R.drawable.video_background)
                 group.visibility = View.VISIBLE
-            } else {group.visibility = View.GONE}
+            } else {
+                group.visibility = View.GONE
+            }
             like.isChecked = post.likedByMe
             like.text = displayCount(post.likesAmount)
             share.isChecked = post.sharedByMe
@@ -75,7 +80,7 @@ private fun displayCount(count: Int): String {
         in 0..999 -> count.toString()
         in 1000..9999 -> "${count / 1000}.${count / 100 % 10}K"
         in 10000..999999 -> "${count / 1000}K"
-        in 1000000..2147483647 -> "${count / 1000000}.${count / 100000 % 10}М"
+        in 1000000..2147483647 -> "${count / 1000000}.${count / 100000 % 10}Рњ"
         else -> "Amount is too big"
     }
 }
