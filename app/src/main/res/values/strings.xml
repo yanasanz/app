@@ -18,4 +18,11 @@
     <string name="video_link">Video link</string>
     <string name="chooser_share_post">Share post</string>
     <string name="watch_video">Watch video</string>
+    <string name="channel_likes_name">Notifications about likes</string>
+    <string name="channel_new_posts_name">Notifications about new posts</string>
+    <string name="channel_likes_description">Notifications from remote server about likes</string>
+    <string name="channel_new_posts_description">Notifications from remote server about new posts</string>
+    <string name="notification_user_liked">User %1$s liked %2$s\'s post</string>
+    <string name="notification_new_post_added">User %1$s posted a new post</string>
+
 </resources>
