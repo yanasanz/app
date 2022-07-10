@@ -19,4 +19,10 @@
     <string name="video_link">Ссылка на видео</string>
     <string name="chooser_share_post">Поделиться</string>
     <string name="watch_video">Смотреть видео</string>
+    <string name="channel_likes_name">Уведомления о лайках</string>
+    <string name="channel_new_posts_name">Уведомления о новых постах</string>
+    <string name="channel_likes_description">Уведомления с удаленного сервера о лайках</string>
+    <string name="channel_new_posts_description">Уведомления с удаленного сервера о новых постах</string>
+    <string name="notification_user_liked">Пользователь %1$s поставил лайк посту %2$s</string>
+    <string name="notification_new_post_added">Пользователь %1$s опубликовал новый пост</string>
 </resources>
