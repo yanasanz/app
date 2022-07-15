@@ -24,5 +24,8 @@
     <string name="channel_new_posts_description">Notifications from remote server about new posts</string>
     <string name="notification_user_liked">User %1$s liked %2$s\'s post</string>
     <string name="notification_new_post_added">User %1$s posted a new post</string>
+    <string name="error_loading">Loading error</string>
+    <string name="retry_loading">Retry loading</string>
+    <string name="empty_posts">There are no posts. If you create a new post, it will appear here.</string>
 
 </resources>
