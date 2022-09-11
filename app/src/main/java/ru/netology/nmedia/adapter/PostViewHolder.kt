@@ -58,12 +58,6 @@ class PostViewHolder(
             avatar.setImageResource(R.drawable.post_avatar_drawable)
             published.text = post.published
             content.text = post.content
-//            if (post.video.contains("youtu")) {
-//                video.setImageResource(R.drawable.video_background)
-//                group.visibility = View.VISIBLE
-//            } else {
-//                group.visibility = View.GONE
-//            }
             like.isChecked = post.likedByMe
             like.text = displayCount(post.likes)
             share.isChecked = post.sharedByMe

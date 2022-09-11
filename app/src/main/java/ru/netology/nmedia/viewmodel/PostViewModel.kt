@@ -14,7 +14,6 @@ import kotlin.concurrent.thread
 
 private val empty = Post(
     id = 0L,
-    avatar = null,
     author = "Нетология",
     content = "",
     published = "",
@@ -23,7 +22,8 @@ private val empty = Post(
     likes = 0,
     sharedByMe = false,
     sharesAmount = 0,
-    viewsAmount = 0
+    viewsAmount = 0,
+    authorAvatar = null
 )
 
 class PostViewModel(application: Application) : AndroidViewModel(application) {
@@ -42,15 +42,16 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun loadPosts() {
-        thread {
-            _data.postValue(FeedModel(loading = true))
-            try {
-                val posts = repository.getAll()
-                FeedModel(posts = posts, empty = posts.isEmpty())
-            } catch (e: IOException) {
-                FeedModel(error = true)
-            }.also(_data::postValue)
-        }
+        _data.value = FeedModel(loading = true)
+        repository.getAllAsync(object : PostRepository.GetAllCallback {
+            override fun onSuccess(posts: List<Post>) {
+                _data.postValue(FeedModel(posts = posts, empty = posts.isEmpty()))
+            }
+
+            override fun onError(e: Exception) {
+                _data.postValue(FeedModel(error = true))
+            }
+        })
     }
 
     fun save(content: String) {
@@ -59,27 +60,69 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
             return
         }
         edited.value?.let {
-            thread {
-                repository.save(it.copy(content = text))
-                _postCreated.postValue(Unit)
-            }
+            repository.save(it.copy(content = text), object : PostRepository.SaveCallback {
+                override fun onSuccess(post: Post) {
+                    _data.postValue(FeedModel())
+                    _postCreated.postValue(Unit)
+                }
+
+                override fun onError(e: Exception) {
+                    _data.postValue(FeedModel(error = true))
+                }
+            })
         }
         edited.value = empty
     }
 
     fun onLike(post: Post) {
-        thread {
-            val updatedPost: Post =
-                if (post.likedByMe) repository.deleteLikeById(post.id) else repository.likeById(post.id)
-            _data.postValue(
-                FeedModel(
-                    _data.value!!.posts.map {
-                        if (post.id == it.id) updatedPost else it
-                    }
-                )
-            )
-            repository.getAll()
-        }
+
+        repository.getPostById(post.id, object : PostRepository.GetPostByIdCallback {
+            override fun onSuccess(post: Post) {
+                if (post.likedByMe) {
+                    repository.deleteLikeById(
+                        post.id,
+                        object : PostRepository.DeleteLikeByIdCallback {
+                            override fun onSuccess(post: Post) {
+                                _data.postValue(
+                                    FeedModel(posts = _data.value!!.posts.map {
+                                        if (post.id == it.id) {
+                                            post.copy(
+                                                likedByMe = post.likedByMe,
+                                                likes = post.likes
+                                            )
+                                        } else {
+                                            it
+                                        }
+                                    })
+                                )
+                            }
+                            override fun onError(e: Exception) {
+                                _data.postValue(FeedModel(error = true))
+                            }
+                        })
+                } else {
+                    repository.likeById(post.id, object : PostRepository.LikeByIdCallback {
+                        override fun onSuccess(post: Post) {
+                            _data.postValue(
+                                FeedModel(posts = _data.value!!.posts.map {
+                                    if (post.id == it.id) {
+                                        post.copy(likedByMe = post.likedByMe, likes = post.likes)
+                                    } else {
+                                        it
+                                    }
+                                })
+                            )
+                        }
+                        override fun onError(e: Exception) {
+                            _data.postValue(FeedModel(error = true))
+                        }
+                    })
+                }
+            }
+            override fun onError(e: Exception) {
+                _data.postValue(FeedModel(error = true))
+            }
+        })
     }
 
     fun onShare(post: Post) {
@@ -89,20 +132,24 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun onRemove(post: Post) {
-        thread {
-            val old = _data.value?.posts.orEmpty()
-            _data.postValue(
-                _data.value?.copy(posts = _data.value?.posts.orEmpty()
-                    .filter { it.id != post.id }
-                )
-            )
-            try {
-                repository.removeById(post.id)
-            } catch (e: IOException) {
-                _data.postValue(_data.value?.copy(posts = old))
+        val old = _data.value?.posts.orEmpty()
+
+        repository.removeById(post.id, object : PostRepository.RemoveByIdCallback {
+            override fun onSuccess() {
+                try {
+                    _data.postValue(
+                        _data.value?.copy(posts = _data.value?.posts.orEmpty()
+                            .filter { it.id != post.id })
+                    )
+                } catch (e: IOException) {
+                    _data.postValue(_data.value?.copy(posts = old))
+                }
             }
 
-        }
+            override fun onError(e: Exception) {
+                _data.postValue(FeedModel(error = true))
+            }
+        })
     }
 
     fun onEdit(post: Post) {
