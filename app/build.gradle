@@ -4,12 +4,12 @@ apply plugin: 'kotlin-kapt'
 apply plugin: 'com.google.gms.google-services'
 
 android {
-    compileSdk 31
+    compileSdk 33
 
     defaultConfig {
         applicationId "ru.netology.nmedia"
         minSdkVersion 23
-        targetSdkVersion 31
+        targetSdkVersion 33
         versionCode 1
         versionName "1.0"
 
@@ -43,18 +43,19 @@ dependencies {
 
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     def arch_version = "2.1.0"
-    def lifecycle_version = "2.5.0"
-    def activity_version = "1.5.0"
-    def fragment_version = "1.5.0"
+    def lifecycle_version = "2.5.1"
+    def activity_version = "1.5.1"
+    def fragment_version = "1.5.2"
     def mdc_version = "1.6.1"
-    def nav_version = "2.5.0"
-    def room_version = "2.4.2"
+    def nav_version = "2.5.2"
+    def room_version = "2.4.3"
     def play_services_base_version = "18.1.0"
     def okhttp_version = "4.9.3"
     def swipe_to_refresh_version = "1.1.0"
+    def glide_version = "4.13.2"
 
-    implementation 'androidx.core:core-ktx:1.8.0'
-    implementation 'androidx.appcompat:appcompat:1.4.2'
+    implementation 'androidx.core:core-ktx:1.9.0'
+    implementation 'androidx.appcompat:appcompat:1.5.1'
     implementation "com.google.android.material:material:$mdc_version"
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
@@ -72,6 +73,8 @@ dependencies {
     implementation "com.google.android.gms:play-services-base:$play_services_base_version"
     implementation "com.squareup.okhttp3:okhttp:$okhttp_version"
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:$swipe_to_refresh_version"
+    kapt "com.github.bumptech.glide:compiler:$glide_version"
+    implementation "com.github.bumptech.glide:okhttp3-integration:$glide_version"
     kapt "androidx.room:room-compiler:$room_version"
     testImplementation "androidx.arch.core:core-testing:$arch_version"
     testImplementation 'junit:junit:4.13.2'

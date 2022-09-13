@@ -13,5 +13,16 @@ data class Post(
     val sharedByMe: Boolean = false,
     val sharesAmount: Int = 0,
     val viewsAmount: Int = 0,
-    val authorAvatar: String? = null
+    val authorAvatar: String? = null,
+    var attachment: Attachment? = null,
 )
+
+data class Attachment(
+    val url: String,
+    val description: String?,
+    val type: AttachmentType,
+)
+
+enum class AttachmentType {
+    IMAGE
+}
