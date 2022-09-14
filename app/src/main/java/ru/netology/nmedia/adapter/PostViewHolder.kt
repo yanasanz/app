@@ -1,8 +1,10 @@
 package ru.netology.nmedia.adapter
 
-import android.view.View
+
+import android.view.View.VISIBLE
 import android.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.CardPostBinding
 import ru.netology.nmedia.dto.Post
@@ -52,16 +54,34 @@ class PostViewHolder(
     }
 
     fun bind(post: Post) {
+
+        val avatarUrl = "http://10.0.2.2:9999/avatars/${post.authorAvatar}"
+        val attachmentUrl = "http://10.0.2.2:9999/images/${post.attachment?.url}"
+
         this.post = post
         with(binding) {
             author.text = post.author
-            avatar.setImageResource(R.drawable.post_avatar_drawable)
             published.text = post.published
             content.text = post.content
             like.isChecked = post.likedByMe
             like.text = displayCount(post.likes)
             share.isChecked = post.sharedByMe
             share.text = displayCount(post.sharesAmount)
+            if (post.attachment != null) {
+                Glide.with(imageAttachment)
+                    .load(attachmentUrl)
+                    .into(imageAttachment)
+                imageAttachment.visibility = VISIBLE
+                imageAttachment.contentDescription = post.attachment?.description
+            }
+
+            Glide.with(avatar)
+                .load(avatarUrl)
+                .placeholder(R.drawable.ic_loading_24)
+                .error(R.drawable.ic_baseline_error_24)
+                .circleCrop()
+                .into(avatar)
+
         }
     }
 }
@@ -75,3 +95,4 @@ private fun displayCount(count: Int): String {
         else -> "Amount is too big"
     }
 }
+

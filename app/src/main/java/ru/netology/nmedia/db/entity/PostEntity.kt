@@ -13,5 +13,6 @@ data class PostEntity(
     val likedByMe: Boolean,
     val likes: Int = 0,
     val sharedByMe: Boolean,
-    val sharesAmount: Int = 0
+    val sharesAmount: Int = 0,
+    val authorAvatar: String?,
 )
