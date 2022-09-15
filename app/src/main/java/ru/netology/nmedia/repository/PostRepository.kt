@@ -1,46 +1,19 @@
 package ru.netology.nmedia.repository
 
-import android.service.autofill.SaveCallback
-import androidx.lifecycle.LiveData
 import ru.netology.nmedia.dto.Post
 
 interface PostRepository {
 
-    fun getAllAsync(callback: GetAllCallback)
-    fun save(post: Post, callback: SaveCallback)
-    fun likeById(id: Long, callback: LikeByIdCallback)
-    fun deleteLikeById(id: Long, callback: DeleteLikeByIdCallback)
+    fun getAll(callback: Callback<List<Post>>)
+    fun save(post: Post, callback: Callback<Post>)
+    fun likeById(id: Long, callback: Callback<Post>)
+    fun deleteLikeById(id: Long, callback: Callback<Post>)
     fun shareById(id: Long)
-    fun removeById(id: Long, callback: RemoveByIdCallback)
-    fun getPostById(id:Long, callback: GetPostByIdCallback)
+    fun removeById(id: Long, callback: Callback<Unit>)
+    fun getPostById(id:Long, callback: Callback<Post>)
 
-    interface GetAllCallback {
-        fun onSuccess(posts: List<Post>) {}
-        fun onError(e: Exception) {}
-    }
-
-    interface SaveCallback {
-        fun onSuccess(post: Post) {}
-        fun onError(e: Exception) {}
-    }
-
-    interface LikeByIdCallback {
-        fun onSuccess(post: Post) {}
-        fun onError(e: Exception) {}
-    }
-
-    interface DeleteLikeByIdCallback {
-        fun onSuccess(post: Post) {}
-        fun onError(e: Exception) {}
-    }
-
-    interface RemoveByIdCallback {
-        fun onSuccess() {}
-        fun onError(e: Exception) {}
-    }
-
-    interface GetPostByIdCallback {
-        fun onSuccess(post: Post) {}
+    interface Callback<T> {
+        fun onSuccess(posts: T) {}
         fun onError(e: Exception) {}
     }
 }

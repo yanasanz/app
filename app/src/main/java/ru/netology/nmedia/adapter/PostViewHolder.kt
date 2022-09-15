@@ -1,6 +1,8 @@
 package ru.netology.nmedia.adapter
 
 
+import android.view.View
+import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
@@ -73,6 +75,8 @@ class PostViewHolder(
                     .into(imageAttachment)
                 imageAttachment.visibility = VISIBLE
                 imageAttachment.contentDescription = post.attachment?.description
+            } else {
+                imageAttachment.visibility = GONE
             }
 
             Glide.with(avatar)
