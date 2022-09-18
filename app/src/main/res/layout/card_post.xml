@@ -75,55 +75,12 @@
         app:layout_constraintTop_toBottomOf="@id/barrier"
         tools:text="@sample/posts.json/data/content" />
 
-    <ImageView
-        android:id="@+id/video"
-        android:layout_width="wrap_content"
-        android:layout_height="240dp"
-        android:contentDescription="@string/video_link"
-        android:padding="@dimen/small_padding"
-        app:layout_constraintBottom_toTopOf="@id/barrier2"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/content"
-        app:srcCompat="@drawable/video_background" />
-
-    <ImageView
-        android:id="@+id/playButton"
-        android:layout_width="@dimen/big_padding"
-        android:layout_height="@dimen/big_padding"
-        android:contentDescription="@string/watch_video"
-        app:layout_constraintBottom_toTopOf="@id/barrier2"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/content"
-        app:srcCompat="@drawable/ic_baseline_play_circle_outline_48" />
-
-    <androidx.constraintlayout.widget.Group
-        android:id="@+id/group"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        app:constraint_referenced_ids="video, playButton" />
-
-    <ImageView
-        android:id="@+id/imageAttachment"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        app:layout_constraintBottom_toTopOf="@id/barrier2"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/content"
-        tools:srcCompat="@drawable/ic_loading_24"
-        android:visibility="gone"/>
-
     <androidx.constraintlayout.widget.Barrier
         android:id="@+id/barrier2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:barrierDirection="bottom"
-        app:constraint_referenced_ids="video" />
+        app:constraint_referenced_ids="content" />
 
     <com.google.android.material.button.MaterialButtonToggleGroup
         android:layout_width="wrap_content"
