@@ -10,6 +10,7 @@ data class Post(
     val likedByMe: Boolean = false,
     val likes: Int = 0,
     val authorAvatar: String? = null,
+    var isRead: Boolean = false,
     //var attachment: Attachment? = null,
 )
 

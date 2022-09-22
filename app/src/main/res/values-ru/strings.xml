@@ -30,4 +30,5 @@
     <string name="empty_posts">Список постов пуст. Создайте новый пост, и он появится здесь.</string>
     <string name="server_error_message">Произошла ошибка, связанная с подключением к серверу.\n Пожалуйста, проверьте настройки интернет-соединения \n или повторите попытку позже.</string>
     <string name="ok_button">ОК</string>
+    <string name="new_posts_message">Свежие записи</string>
 </resources>

@@ -1,5 +1,6 @@
 package ru.netology.nmedia.activity
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -23,6 +24,7 @@ class FeedFragment : Fragment() {
         ownerProducer = ::requireParentFragment
     )
 
+    @SuppressLint("StringFormatInvalid", "SetTextI18n")
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -68,7 +70,7 @@ class FeedFragment : Fragment() {
 
         binding.list.adapter = adapter
 
-        viewModel.dataState.observe(viewLifecycleOwner, { state ->
+        viewModel.dataState.observe(viewLifecycleOwner) { state ->
             binding.progress.isVisible = state.loading
             binding.swipeRefresh.isRefreshing = state.refreshing
             if (state.error) {
@@ -76,14 +78,25 @@ class FeedFragment : Fragment() {
                     .setAction(R.string.retry_loading) { viewModel.loadPosts() }
                     .show()
             }
-        })
-        viewModel.data.observe(viewLifecycleOwner, { state ->
+        }
+        viewModel.data.observe(viewLifecycleOwner) { state ->
             adapter.submitList(state.posts)
             binding.emptyText.isVisible = state.empty
-        })
+        }
+
+        viewModel.newerCount.observe(viewLifecycleOwner) { count ->
+            if (count > 0) binding.loadNewPostsButton.show()
+        }
+
+        binding.loadNewPostsButton.setOnClickListener {
+            binding.loadNewPostsButton.hide()
+            binding.list.smoothScrollToPosition(0)
+            viewModel.read()
+        }
 
         binding.swipeRefresh.setOnRefreshListener {
             viewModel.refreshPosts()
+            binding.loadNewPostsButton.hide()
             binding.swipeRefresh.isRefreshing = false
         }
 

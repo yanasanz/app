@@ -2,6 +2,9 @@ package ru.netology.nmedia.viewmodel
 
 import android.app.Application
 import androidx.lifecycle.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import ru.netology.nmedia.db.AppDb
 import ru.netology.nmedia.dto.Post
@@ -16,7 +19,8 @@ private val empty = Post(
     published = "",
     likedByMe = false,
     likes = 0,
-    authorAvatar = null
+    authorAvatar = null,
+    isRead = false
 )
 
 class PostViewModel(application: Application) : AndroidViewModel(application) {
@@ -25,6 +29,16 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
         PostRepositoryImpl(AppDb.getInstance(context = application).postDao())
 
     val data: LiveData<FeedModel> = repository.data.map(::FeedModel)
+        .catch { e->
+            e.printStackTrace()
+        }
+        .asLiveData(Dispatchers.Default)
+
+    val newerCount: LiveData<Int> = data.switchMap {
+        repository.getNewerCount(it.posts.firstOrNull()?.id ?: 0L)
+            .catch { e -> e.printStackTrace() }
+            .asLiveData(Dispatchers.Default)
+    }
     private val _dataState = MutableLiveData<FeedModelState>()
     val dataState: LiveData<FeedModelState>
         get() = _dataState
@@ -63,7 +77,6 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun onRemove(post: Post) {
-        _postCreated.value = Unit
         viewModelScope.launch {
             try {
                 repository.removeById(post.id)
@@ -98,8 +111,6 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     private fun likeById(id: Long) {
-        //edited.value?.let {
-            _postCreated.value = Unit
             viewModelScope.launch {
                 try {
                     repository.likeById(id)
@@ -108,14 +119,9 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
                     _dataState.value = FeedModelState(error = true)
                 }
             }
-        //}
-        //edited.value = empty
-
     }
 
     private fun deleteLikeById(id: Long) {
-        //edited.value?.let {
-            _postCreated.value = Unit
             viewModelScope.launch {
                 try {
                     repository.deleteLikeById(id)
@@ -124,8 +130,6 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
                     _dataState.value = FeedModelState(error = true)
                 }
             }
-        //}
-        //edited.value = empty
     }
 
     fun onEdit(post: Post) {
@@ -134,5 +138,11 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
 
     fun onCancel() {
         edited.value = null
+    }
+
+    fun read(){
+        viewModelScope.launch {
+            repository.read()
+        }
     }
 }

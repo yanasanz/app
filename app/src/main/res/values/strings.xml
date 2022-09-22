@@ -29,4 +29,5 @@
     <string name="empty_posts">There are no posts. If you create a new post, it will appear here.</string>
     <string name="server_error_message">There was an error connecting to the server. \n Please check your internet connection settings \n or try again later.</string>
     <string name="ok_button">OK</string>
+    <string name="new_posts_message">There are new posts</string>
 </resources>
