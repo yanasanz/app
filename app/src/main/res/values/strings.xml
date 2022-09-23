@@ -30,4 +30,8 @@
     <string name="server_error_message">There was an error connecting to the server. \n Please check your internet connection settings \n or try again later.</string>
     <string name="ok_button">OK</string>
     <string name="new_posts_message">There are new posts</string>
+    <string name="description_select_photo">Select photo</string>
+    <string name="description_take_photo">Take photo</string>
+    <string name="description_photo">Photo</string>
+    <string name="remove">Remove</string>
 </resources>

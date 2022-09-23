@@ -1,17 +1,13 @@
 package ru.netology.nmedia.dao
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
 import kotlinx.coroutines.flow.Flow
-import retrofit2.Response
-import retrofit2.http.GET
-import retrofit2.http.Path
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.entity.PostEntity
+import ru.netology.nmedia.enumeration.AttachmentType
 
 @Dao
+@TypeConverters(Converters::class)
 interface PostDao {
     @Query("SELECT * FROM PostEntity ORDER BY id DESC")
     fun getAll(): Flow<List<PostEntity>>
@@ -49,4 +45,12 @@ interface PostDao {
 
     @Query("UPDATE PostEntity SET isRead = 1")
     suspend fun read()
+}
+
+class Converters {
+    @TypeConverter
+    fun toAttachmentType(value :String) = enumValueOf<AttachmentType>(value)
+
+    @TypeConverter
+    fun fromAttachmentType(value : AttachmentType) = value.name
 }

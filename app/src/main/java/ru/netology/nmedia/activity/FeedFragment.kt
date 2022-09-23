@@ -62,6 +62,19 @@ class FeedFragment : Fragment() {
                     })
             }
 
+            override fun onShowPhoto(post: Post) {
+                val likes = post.likes.toString()
+                val id = post.id
+                val likedByMe = post.likedByMe
+                val url = post.attachment!!.url
+                val bundle = Bundle()
+                bundle.putString("likes", likes)
+                bundle.putBoolean("likedByMe", likedByMe)
+                bundle.putString("url", url)
+                bundle.putLong("id", id)
+                findNavController().navigate(R.id.action_feedFragment_to_showPhotoFragment, bundle)
+            }
+
             override fun onCancel() {
                 viewModel.onCancel()
             }
