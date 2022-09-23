@@ -1,167 +1,107 @@
 package ru.netology.nmedia.repository
 
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
-import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.OkHttpClient
-import ru.netology.nmedia.BuildConfig
+import androidx.lifecycle.map
 import ru.netology.nmedia.api.PostsApi
+import ru.netology.nmedia.dao.PostDao
 import ru.netology.nmedia.dto.Post
-import java.net.SocketTimeoutException
-import java.util.concurrent.TimeUnit
+import ru.netology.nmedia.entity.PostEntity
+import ru.netology.nmedia.entity.toDto
+import ru.netology.nmedia.entity.toEntity
+import ru.netology.nmedia.error.ApiError
+import ru.netology.nmedia.error.NetworkError
+import ru.netology.nmedia.error.UnknownError
+import java.io.IOException
 
-class PostRepositoryImpl : PostRepository {
+class PostRepositoryImpl(private val dao: PostDao) : PostRepository {
+    override val data = dao.getAll().map(List<PostEntity>::toDto)
 
-    private val client = OkHttpClient.Builder()
-        .connectTimeout(30, TimeUnit.SECONDS)
-        .build()
-    private val gson = Gson()
-    private val typeToken = object : TypeToken<List<Post>>() {}
-
-    companion object {
-        private const val BASE_URL = BuildConfig.BASE_URL
-        private val jsonType = "application/json".toMediaType()
+    override suspend fun getAll() {
+        try {
+            val response = PostsApi.service.getAll()
+            if (!response.isSuccessful) {
+                throw ApiError(response.code(), response.message())
+            }
+            val body = response.body() ?: throw ApiError(response.code(), response.message())
+            dao.insert(body.toEntity())
+        } catch (e: IOException) {
+            throw NetworkError
+        } catch (e: Exception) {
+            throw UnknownError
+        }
     }
 
-    override fun getAll(callback: PostRepository.Callback<List<Post>>) {
-        PostsApi.retrofitService.getAll().enqueue(object : retrofit2.Callback<List<Post>> {
-            override fun onResponse(
-                call: retrofit2.Call<List<Post>>,
-                response: retrofit2.Response<List<Post>>
-            ) {
-                if (!response.isSuccessful) {
-                    callback.onError(RuntimeException(response.message()))
-                    return
-                }
-                callback.onSuccess(response.body() ?: throw RuntimeException("body is null"))
+    override suspend fun likeById(id: Long) {
+        try {
+            val response = PostsApi.service.likeById(id)
+            if (!response.isSuccessful) {
+                throw ApiError(response.code(), response.message())
             }
-
-            override fun onFailure(call: retrofit2.Call<List<Post>>, t: Throwable) {
-                if (t is SocketTimeoutException) {
-                    callback.onError(SocketTimeoutException("There was an error connecting to the server"))
-                } else {
-                    callback.onError(Exception("Loading error"))
-                }
-            }
-        })
+            val body = response.body() ?: throw ApiError(response.code(), response.message())
+            dao.insert(PostEntity.fromDto(body))
+        } catch (e: IOException) {
+            throw NetworkError
+        } catch (e: Exception) {
+            throw UnknownError
+        }
     }
 
-    override fun likeById(id: Long, callback: PostRepository.Callback<Post>) {
-        PostsApi.retrofitService.likeById(id).enqueue(object : retrofit2.Callback<Post> {
-            override fun onResponse(
-                call: retrofit2.Call<Post>,
-                response: retrofit2.Response<Post>
-            ) {
-                if (!response.isSuccessful) {
-                    callback.onError(RuntimeException(response.message()))
-                    return
-                }
-                callback.onSuccess(response.body() ?: throw RuntimeException("body is null"))
+    override suspend fun deleteLikeById(id: Long) {
+        try {
+            val response = PostsApi.service.deleteLikeById(id)
+            if (!response.isSuccessful) {
+                throw ApiError(response.code(), response.message())
             }
-
-            override fun onFailure(call: retrofit2.Call<Post>, t: Throwable) {
-                if (t is SocketTimeoutException) {
-                    callback.onError(SocketTimeoutException("There was an error connecting to the server"))
-                } else {
-                    callback.onError(Exception("Loading error"))
-                }
-            }
-        })
+            val body = response.body() ?: throw ApiError(response.code(), response.message())
+            dao.insert(PostEntity.fromDto(body))
+        } catch (e: IOException) {
+            throw NetworkError
+        } catch (e: Exception) {
+            throw UnknownError
+        }
     }
 
-    override fun deleteLikeById(id: Long, callback: PostRepository.Callback<Post>) {
-        PostsApi.retrofitService.deleteLikeById(id).enqueue(object : retrofit2.Callback<Post> {
-            override fun onResponse(
-                call: retrofit2.Call<Post>,
-                response: retrofit2.Response<Post>
-            ) {
-                if (!response.isSuccessful) {
-                    callback.onError(RuntimeException(response.message()))
-                    return
-                }
-                callback.onSuccess(response.body() ?: throw RuntimeException("body is null"))
+    override suspend fun removeById(id: Long) {
+        try {
+            val response = PostsApi.service.removeById(id)
+            if (!response.isSuccessful) {
+                throw ApiError(response.code(), response.message())
             }
-
-            override fun onFailure(call: retrofit2.Call<Post>, t: Throwable) {
-                if (t is SocketTimeoutException) {
-                    callback.onError(SocketTimeoutException("There was an error connecting to the server"))
-                } else {
-                    callback.onError(Exception("Loading error"))
-                }
-            }
-        })
+            dao.removeById(id)
+        } catch (e: IOException) {
+            throw NetworkError
+        } catch (e: Exception) {
+            throw UnknownError
+        }
     }
 
-    override fun shareById(id: Long) {
+    override suspend fun save(post: Post) {
+        try {
+            val response = PostsApi.service.save(post)
+            if (!response.isSuccessful) {
+                throw ApiError(response.code(), response.message())
+            }
+            val body = response.body() ?: throw ApiError(response.code(), response.message())
+            dao.insert(PostEntity.fromDto(body))
+        } catch (e: IOException) {
+            throw NetworkError
+        } catch (e: Exception) {
+            throw UnknownError
+        }
     }
 
-    override fun removeById(id: Long, callback: PostRepository.Callback<Unit>) {
-        PostsApi.retrofitService.removeById(id).enqueue(object : retrofit2.Callback<Unit> {
-            override fun onResponse(
-                call: retrofit2.Call<Unit>,
-                response: retrofit2.Response<Unit>
-            ) {
-                if (!response.isSuccessful) {
-                    callback.onError(RuntimeException(response.message()))
-                    return
-                }
-                callback.onSuccess(response.body() ?: throw RuntimeException("body is null"))
+    override suspend fun getPostById(id: Long) {
+        try {
+            val response = PostsApi.service.getPostById(id)
+            if (!response.isSuccessful) {
+                throw ApiError(response.code(), response.message())
             }
-
-            override fun onFailure(call: retrofit2.Call<Unit>, t: Throwable) {
-                if (t is SocketTimeoutException) {
-                    callback.onError(SocketTimeoutException("There was an error connecting to the server"))
-                } else {
-                    callback.onError(Exception("Loading error"))
-                }
-            }
-        })
-    }
-
-    override fun save(post: Post, callback: PostRepository.Callback<Post>) {
-        PostsApi.retrofitService.save(post).enqueue(object : retrofit2.Callback<Post> {
-            override fun onResponse(
-                call: retrofit2.Call<Post>,
-                response: retrofit2.Response<Post>
-            ) {
-                if (!response.isSuccessful) {
-                    callback.onError(RuntimeException(response.message()))
-                    return
-                }
-                callback.onSuccess(response.body() ?: throw RuntimeException("body is null"))
-            }
-
-            override fun onFailure(call: retrofit2.Call<Post>, t: Throwable) {
-                if (t is SocketTimeoutException) {
-                    callback.onError(SocketTimeoutException("There was an error connecting to the server"))
-                } else {
-                    callback.onError(Exception("Loading error"))
-                }
-            }
-        })
-    }
-
-    override fun getPostById(id: Long, callback: PostRepository.Callback<Post>) {
-        PostsApi.retrofitService.getPostById(id).enqueue(object : retrofit2.Callback<Post> {
-            override fun onResponse(
-                call: retrofit2.Call<Post>,
-                response: retrofit2.Response<Post>
-            ) {
-                if (!response.isSuccessful) {
-                    callback.onError(RuntimeException(response.message()))
-                    return
-                }
-                callback.onSuccess(response.body() ?: throw RuntimeException("body is null"))
-            }
-
-            override fun onFailure(call: retrofit2.Call<Post>, t: Throwable) {
-                if (t is SocketTimeoutException) {
-                    callback.onError(SocketTimeoutException("There was an error connecting to the server"))
-                } else {
-                    callback.onError(Exception("Loading error"))
-                }
-            }
-        })
+            val body = response.body() ?: throw ApiError(response.code(), response.message())
+            dao.getPostById(body.id)
+        } catch (e: IOException) {
+            throw NetworkError
+        } catch (e: Exception) {
+            throw UnknownError
+        }
     }
 
 }
