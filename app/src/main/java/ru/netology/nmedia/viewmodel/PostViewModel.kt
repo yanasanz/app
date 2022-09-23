@@ -4,12 +4,11 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import ru.netology.nmedia.db.AppDb
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.repository.*
 import ru.netology.nmedia.util.SingleLiveEvent
 import java.io.IOException
-import java.text.DateFormat
+import java.net.SocketTimeoutException
 import kotlin.concurrent.thread
 
 private val empty = Post(
@@ -43,13 +42,15 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
 
     fun loadPosts() {
         _data.value = FeedModel(loading = true)
-        repository.getAllAsync(object : PostRepository.GetAllCallback {
+        repository.getAll(object : PostRepository.Callback<List<Post>> {
             override fun onSuccess(posts: List<Post>) {
                 _data.postValue(FeedModel(posts = posts, empty = posts.isEmpty()))
             }
 
             override fun onError(e: Exception) {
-                _data.postValue(FeedModel(error = true))
+                _data.postValue(
+                    if (e is SocketTimeoutException) FeedModel(serverError = true) else FeedModel(error = true)
+                )
             }
         })
     }
@@ -60,14 +61,17 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
             return
         }
         edited.value?.let {
-            repository.save(it.copy(content = text), object : PostRepository.SaveCallback {
-                override fun onSuccess(post: Post) {
+            repository.save(it.copy(content = text), object : PostRepository.Callback<Post> {
+                override fun onSuccess(posts: Post) {
                     _data.postValue(FeedModel())
                     _postCreated.postValue(Unit)
+                    loadPosts()
                 }
 
                 override fun onError(e: Exception) {
-                    _data.postValue(FeedModel(error = true))
+                    _data.postValue(
+                        if (e is SocketTimeoutException) FeedModel(serverError = true) else FeedModel(error = true)
+                    )
                 }
             })
         }
@@ -76,19 +80,19 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
 
     fun onLike(post: Post) {
 
-        repository.getPostById(post.id, object : PostRepository.GetPostByIdCallback {
-            override fun onSuccess(post: Post) {
-                if (post.likedByMe) {
+        repository.getPostById(post.id, object : PostRepository.Callback<Post> {
+            override fun onSuccess(posts: Post) {
+                if (posts.likedByMe) {
                     repository.deleteLikeById(
-                        post.id,
-                        object : PostRepository.DeleteLikeByIdCallback {
-                            override fun onSuccess(post: Post) {
+                        posts.id,
+                        object : PostRepository.Callback<Post> {
+                            override fun onSuccess(posts: Post) {
                                 _data.postValue(
                                     FeedModel(posts = _data.value!!.posts.map {
-                                        if (post.id == it.id) {
-                                            post.copy(
-                                                likedByMe = post.likedByMe,
-                                                likes = post.likes
+                                        if (posts.id == it.id) {
+                                            posts.copy(
+                                                likedByMe = posts.likedByMe,
+                                                likes = posts.likes
                                             )
                                         } else {
                                             it
@@ -96,31 +100,40 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
                                     })
                                 )
                             }
+
                             override fun onError(e: Exception) {
-                                _data.postValue(FeedModel(error = true))
+                                _data.postValue(
+                                    if (e is SocketTimeoutException) FeedModel(serverError = true) else FeedModel(error = true)
+                                )
                             }
                         })
                 } else {
-                    repository.likeById(post.id, object : PostRepository.LikeByIdCallback {
-                        override fun onSuccess(post: Post) {
+                    repository.likeById(posts.id, object : PostRepository.Callback<Post> {
+                        override fun onSuccess(posts: Post) {
                             _data.postValue(
                                 FeedModel(posts = _data.value!!.posts.map {
-                                    if (post.id == it.id) {
-                                        post.copy(likedByMe = post.likedByMe, likes = post.likes)
+                                    if (posts.id == it.id) {
+                                        posts.copy(likedByMe = posts.likedByMe, likes = posts.likes)
                                     } else {
                                         it
                                     }
                                 })
                             )
                         }
+
                         override fun onError(e: Exception) {
-                            _data.postValue(FeedModel(error = true))
+                            _data.postValue(
+                                if (e is SocketTimeoutException) FeedModel(serverError = true) else FeedModel(error = true)
+                            )
                         }
                     })
                 }
             }
+
             override fun onError(e: Exception) {
-                _data.postValue(FeedModel(error = true))
+                _data.postValue(
+                    if (e is SocketTimeoutException) FeedModel(serverError = true) else FeedModel(error = true)
+                )
             }
         })
     }
@@ -134,8 +147,8 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     fun onRemove(post: Post) {
         val old = _data.value?.posts.orEmpty()
 
-        repository.removeById(post.id, object : PostRepository.RemoveByIdCallback {
-            override fun onSuccess() {
+        repository.removeById(post.id, object : PostRepository.Callback<Unit> {
+            override fun onSuccess(posts: Unit) {
                 try {
                     _data.postValue(
                         _data.value?.copy(posts = _data.value?.posts.orEmpty()
@@ -147,7 +160,9 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
             }
 
             override fun onError(e: Exception) {
-                _data.postValue(FeedModel(error = true))
+                _data.postValue(
+                    if (e is SocketTimeoutException) FeedModel(serverError = true) else FeedModel(error = true)
+                )
             }
         })
     }

@@ -27,7 +27,7 @@ class FeedFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         super.onCreateView(inflater, container, savedInstanceState)
         val binding = FragmentFeedBinding.inflate(inflater, container, false)
 
@@ -78,8 +78,12 @@ class FeedFragment : Fragment() {
             binding.progress.isVisible = state.loading
             binding.errorGroup.isVisible = state.error
             binding.emptyText.isVisible = state.empty
+            binding.serverErrorGroup.isVisible = state.serverError
         })
         binding.retryButton.setOnClickListener {
+            viewModel.loadPosts()
+        }
+        binding.okButton.setOnClickListener {
             viewModel.loadPosts()
         }
         binding.swipeRefresh.setOnRefreshListener {

@@ -25,7 +25,9 @@
     <string name="channel_new_posts_description">Уведомления с удаленного сервера о новых постах</string>
     <string name="notification_user_liked">Пользователь %1$s поставил лайк посту %2$s</string>
     <string name="notification_new_post_added">Пользователь %1$s опубликовал новый пост</string>
-    <string name="error_loading">Ошибка загрузки</string>
+    <string name="error_loading">Ошибка загрузки. Отсутствует интернет-соединение</string>
     <string name="retry_loading">Повторить попытку</string>
     <string name="empty_posts">Список постов пуст. Создайте новый пост, и он появится здесь.</string>
+    <string name="server_error_message">Произошла ошибка, связанная с подключением к серверу.\n Пожалуйста, проверьте настройки интернет-соединения \n или повторите попытку позже.</string>
+    <string name="ok_button">ОК</string>
 </resources>
