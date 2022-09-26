@@ -35,7 +35,7 @@ interface PostDao {
     suspend fun removeById(id: Long)
 
     @Query("SELECT * FROM PostEntity WHERE id = :id")
-    suspend fun getPostById(id: Long): Post
+    suspend fun getPostById(id: Long): PostEntity
 
     @Query("SELECT COUNT(*) FROM PostEntity")
     suspend fun count(): Int
