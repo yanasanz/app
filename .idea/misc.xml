@@ -3,8 +3,16 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="..\:/Users/Yana/AndroidStudioProjects/app/app/src/main/res/layout/card_post.xml" value="0.33152173913043476" />
+        <entry key="..\:/Users/Yana/AndroidStudioProjects/app/app/src/main/res/drawable/ic_baseline_error_24.xml" value="0.1" />
+        <entry key="..\:/Users/Yana/AndroidStudioProjects/app/app/src/main/res/drawable/ic_baseline_image_placeholder_24.xml" value="0.119" />
+        <entry key="..\:/Users/Yana/AndroidStudioProjects/app/app/src/main/res/drawable/ic_camera_24dp.xml" value="0.1195" />
+        <entry key="..\:/Users/Yana/AndroidStudioProjects/app/app/src/main/res/drawable/ic_photo_24dp.xml" value="0.264" />
+        <entry key="..\:/Users/Yana/AndroidStudioProjects/app/app/src/main/res/layout/card_post.xml" value="0.1" />
         <entry key="..\:/Users/Yana/AndroidStudioProjects/app/app/src/main/res/layout/fragment_feed.xml" value="0.31431159420289856" />
+        <entry key="..\:/Users/Yana/AndroidStudioProjects/app/app/src/main/res/layout/fragment_new_post.xml" value="0.39895833333333336" />
+        <entry key="..\:/Users/Yana/AndroidStudioProjects/app/app/src/main/res/layout/fragment_show_photo.xml" value="0.1" />
+        <entry key="..\:/Users/Yana/AndroidStudioProjects/app/app/src/main/res/menu/menu_new_post.xml" value="0.2962962962962963" />
+        <entry key="..\:/Users/Yana/AndroidStudioProjects/app/app/src/main/res/menu/options_post.xml" value="0.1" />
         <entry key="..\:/Users/sanzh/AndroidStudioProjects/NMedia/app/src/main/res/drawable/custom_popup_background.xml" value="0.21770833333333334" />
         <entry key="..\:/Users/sanzh/AndroidStudioProjects/NMedia/app/src/main/res/drawable/ic_baseline_check_circle_48.xml" value="0.37864583333333335" />
         <entry key="..\:/Users/sanzh/AndroidStudioProjects/NMedia/app/src/main/res/drawable/ic_launcher_background.xml" value="0.21875" />

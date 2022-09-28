@@ -31,4 +31,8 @@
     <string name="server_error_message">Произошла ошибка, связанная с подключением к серверу.\n Пожалуйста, проверьте настройки интернет-соединения \n или повторите попытку позже.</string>
     <string name="ok_button">ОК</string>
     <string name="new_posts_message">Свежие записи</string>
+    <string name="description_select_photo">Выбрать фото</string>
+    <string name="description_take_photo">Сделать фото</string>
+    <string name="description_photo">Фото</string>
+    <string name="remove">Удалить</string>
 </resources>

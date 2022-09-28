@@ -1,6 +1,7 @@
 package ru.netology.nmedia.adapter
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
 import androidx.recyclerview.widget.DiffUtil
@@ -10,6 +11,7 @@ import ru.netology.nmedia.BuildConfig
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.CardPostBinding
 import ru.netology.nmedia.dto.*
+import ru.netology.nmedia.view.load
 import ru.netology.nmedia.view.loadCircleCrop
 
 interface PostInteractionListener {
@@ -17,6 +19,7 @@ interface PostInteractionListener {
     fun onShare(post: Post)
     fun onRemove(post: Post)
     fun onEdit(post: Post)
+    fun onShowPhoto(post: Post)
     fun onCancel()
 }
 
@@ -39,59 +42,55 @@ class PostViewHolder(
     private val listener: PostInteractionListener
 ) : RecyclerView.ViewHolder(binding.root) {
 
-    private lateinit var post: Post
-
-    private val popupMenu by lazy {
-        PopupMenu(itemView.context, binding.menu).apply {
-            inflate(R.menu.options_post)
-            setOnMenuItemClickListener { menuItem ->
-                when (menuItem.itemId) {
-                    R.id.edit -> {
-                        listener.onEdit(post)
-                        true
-                    }
-                    R.id.remove -> {
-                        listener.onRemove(post)
-                        true
-                    }
-                    else -> false
-                }
-            }
-        }
-    }
-
-    init {
-        binding.like.setOnClickListener {
-            listener.onLike(post)
-        }
-        binding.share.setOnClickListener {
-            listener.onShare(post)
-        }
-        binding.menu.setOnClickListener {
-            popupMenu.show()
-        }
-    }
-
     fun bind(post: Post) {
 
         val avatarUrl = "${BuildConfig.BASE_URL}/avatars/${post.authorAvatar}"
-//        val attachmentUrl = "${BuildConfig.BASE_URL}/images/${post.attachment?.url}"
+        val imageUrl = "${BuildConfig.BASE_URL}/media/${post.attachment?.url}"
 
-        this.post = post
-        with(binding) {
+        binding.apply {
             author.text = post.author
             published.text = post.published
             content.text = post.content
             like.isChecked = post.likedByMe
             like.text = displayCount(post.likes)
             avatar.loadCircleCrop(avatarUrl)
-//            if (post.attachment != null) {
-//                imageAttachment.load(attachmentUrl)
-//                imageAttachment.visibility = View.VISIBLE
-//                imageAttachment.contentDescription = post.attachment?.description
-//            } else {
-//                imageAttachment.visibility = View.GONE
-//            }
+            if (post.attachment != null) {
+                imageAttachment.load(imageUrl)
+                imageAttachment.visibility = View.VISIBLE
+            } else {
+                imageAttachment.visibility = View.GONE
+            }
+
+            menu.setOnClickListener {
+                PopupMenu(it.context, it).apply {
+                    inflate(R.menu.options_post)
+                    setOnMenuItemClickListener { menuItem ->
+                        when (menuItem.itemId) {
+                            R.id.remove -> {
+                                listener.onRemove(post)
+                                true
+                            }
+                            R.id.edit -> {
+                                listener.onEdit(post)
+                                true
+                            }
+                            else -> false
+                        }
+                    }
+                }.show()
+            }
+
+            like.setOnClickListener {
+                listener.onLike(post)
+            }
+            share.setOnClickListener {
+                listener.onShare(post)
+            }
+
+            imageAttachment.setOnClickListener{
+                listener.onShowPhoto(post)
+            }
+
         }
     }
 }
