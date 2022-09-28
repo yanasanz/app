@@ -1,6 +1,5 @@
 package ru.netology.nmedia.activity
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -15,8 +14,10 @@ import ru.netology.nmedia.R
 import ru.netology.nmedia.activity.NewPostFragment.Companion.textArg
 import ru.netology.nmedia.adapter.PostAdapter
 import ru.netology.nmedia.adapter.PostInteractionListener
+import ru.netology.nmedia.auth.AppAuth
 import ru.netology.nmedia.databinding.FragmentFeedBinding
 import ru.netology.nmedia.dto.Post
+import ru.netology.nmedia.util.DialogManager
 import ru.netology.nmedia.viewmodel.PostViewModel
 
 class FeedFragment : Fragment() {
@@ -24,7 +25,6 @@ class FeedFragment : Fragment() {
         ownerProducer = ::requireParentFragment
     )
 
-    @SuppressLint("StringFormatInvalid", "SetTextI18n")
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -35,6 +35,15 @@ class FeedFragment : Fragment() {
 
         val adapter = PostAdapter(object : PostInteractionListener {
             override fun onLike(post: Post) {
+                if (AppAuth.getInstance().authStateFlow.value.id != 0L){
+                    viewModel.onLike(post)
+                } else {
+                    DialogManager.SignInDialog(requireContext(), object: DialogManager.Listener{
+                        override fun onClick() {
+                            findNavController().navigate(R.id.action_feedFragment_to_signInFragment)
+                        }
+                    })
+                }
                 viewModel.onLike(post)
             }
 
@@ -114,9 +123,19 @@ class FeedFragment : Fragment() {
         }
 
         binding.fab.setOnClickListener {
-            findNavController().navigate(R.id.action_feedFragment_to_newPostFragment)
+            if (AppAuth.getInstance().authStateFlow.value.id != 0L){
+                findNavController().navigate(R.id.action_feedFragment_to_newPostFragment)
+            } else {
+                DialogManager.SignInDialog(requireContext(), object: DialogManager.Listener{
+                    override fun onClick() {
+                        findNavController().navigate(R.id.action_feedFragment_to_signInFragment)
+                    }
+                })
+            }
         }
 
         return binding.root
     }
+
 }
+

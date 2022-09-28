@@ -34,5 +34,18 @@
     <string name="description_select_photo">Выбрать фото</string>
     <string name="description_take_photo">Сделать фото</string>
     <string name="description_photo">Фото</string>
+    <string name="description_save_photo">Сохранить фото</string>
     <string name="remove">Удалить</string>
+    <string name="sign_in">Вход</string>
+    <string name="sign_up">Регистрация</string>
+    <string name="sign_out">Выход</string>
+    <string name="login">Логин:</string>
+    <string name="enter_login">Введите логин</string>
+    <string name="password">Пароль:</string>
+    <string name="enter_password">Введите пароль</string>
+    <string name="enter_user_name">Введите имя</string>
+    <string name="confirm_password">Подтвердите пароль</string>
+    <string name="error_filling_forms">Не оставляйте поля пустыми</string>
+    <string name="password_doesnt_match">Пароли не совпадают</string>
+
 </resources>

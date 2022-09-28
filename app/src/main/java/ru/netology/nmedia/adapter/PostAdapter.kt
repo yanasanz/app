@@ -61,6 +61,8 @@ class PostViewHolder(
                 imageAttachment.visibility = View.GONE
             }
 
+            menu.visibility = if (post.ownedByMe) View.VISIBLE else View.INVISIBLE
+
             menu.setOnClickListener {
                 PopupMenu(it.context, it).apply {
                     inflate(R.menu.options_post)
