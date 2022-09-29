@@ -13,3 +13,5 @@
 .externalNativeBuild
 .cxx
 local.properties
+app/src/main/java/ru/netology/nmedia/constants.kt
+fcm.json

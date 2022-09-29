@@ -21,8 +21,10 @@
     <string name="watch_video">Смотреть видео</string>
     <string name="channel_likes_name">Уведомления о лайках</string>
     <string name="channel_new_posts_name">Уведомления о новых постах</string>
+    <string name="channel_push_token_name">Пуш-уведомления</string>
     <string name="channel_likes_description">Уведомления с удаленного сервера о лайках</string>
     <string name="channel_new_posts_description">Уведомления с удаленного сервера о новых постах</string>
+    <string name="channel_push_token_description">Пуш-уведомления с удаленного сервера</string>
     <string name="notification_user_liked">Пользователь %1$s поставил лайк посту %2$s</string>
     <string name="notification_new_post_added">Пользователь %1$s опубликовал новый пост</string>
     <string name="error_loading">Ошибка загрузки. Отсутствует интернет-соединение</string>

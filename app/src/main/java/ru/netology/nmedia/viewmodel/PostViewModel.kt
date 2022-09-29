@@ -34,6 +34,7 @@ private val empty = Post(
 
 private val noPhoto = PhotoModel()
 
+@ExperimentalCoroutinesApi
 class PostViewModel(application: Application) : AndroidViewModel(application) {
 
     private val repository: PostRepository =
