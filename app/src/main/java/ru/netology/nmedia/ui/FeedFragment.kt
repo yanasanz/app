@@ -1,4 +1,4 @@
-package ru.netology.nmedia.activity
+package ru.netology.nmedia.ui
 
 import android.content.Intent
 import android.os.Bundle
@@ -10,8 +10,10 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import ru.netology.nmedia.R
-import ru.netology.nmedia.activity.NewPostFragment.Companion.textArg
+import ru.netology.nmedia.ui.NewPostFragment.Companion.textArg
 import ru.netology.nmedia.adapter.PostAdapter
 import ru.netology.nmedia.adapter.PostInteractionListener
 import ru.netology.nmedia.auth.AppAuth
@@ -19,11 +21,15 @@ import ru.netology.nmedia.databinding.FragmentFeedBinding
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.util.DialogManager
 import ru.netology.nmedia.viewmodel.PostViewModel
+import javax.inject.Inject
 
+@AndroidEntryPoint
+@ExperimentalCoroutinesApi
 class FeedFragment : Fragment() {
-    private val viewModel: PostViewModel by viewModels(
-        ownerProducer = ::requireParentFragment
-    )
+    @Inject
+    lateinit var auth: AppAuth
+
+    private val viewModel: PostViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -35,10 +41,10 @@ class FeedFragment : Fragment() {
 
         val adapter = PostAdapter(object : PostInteractionListener {
             override fun onLike(post: Post) {
-                if (AppAuth.getInstance().authStateFlow.value.id != 0L){
+                if (auth.authStateFlow.value.id != 0L) {
                     viewModel.onLike(post)
                 } else {
-                    DialogManager.SignInDialog(requireContext(), object: DialogManager.Listener{
+                    DialogManager.SignInDialog(requireContext(), object : DialogManager.Listener {
                         override fun onClick() {
                             findNavController().navigate(R.id.action_feedFragment_to_signInFragment)
                         }
@@ -123,10 +129,10 @@ class FeedFragment : Fragment() {
         }
 
         binding.fab.setOnClickListener {
-            if (AppAuth.getInstance().authStateFlow.value.id != 0L){
+            if (auth.authStateFlow.value.id != 0L) {
                 findNavController().navigate(R.id.action_feedFragment_to_newPostFragment)
             } else {
-                DialogManager.SignInDialog(requireContext(), object: DialogManager.Listener{
+                DialogManager.SignInDialog(requireContext(), object : DialogManager.Listener {
                     override fun onClick() {
                         findNavController().navigate(R.id.action_feedFragment_to_signInFragment)
                     }
@@ -136,6 +142,5 @@ class FeedFragment : Fragment() {
 
         return binding.root
     }
-
 }
 

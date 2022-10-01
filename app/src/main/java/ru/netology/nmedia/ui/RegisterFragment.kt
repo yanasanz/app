@@ -1,4 +1,4 @@
-package ru.netology.nmedia.activity
+package ru.netology.nmedia.ui
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -8,16 +8,22 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import dagger.hilt.android.AndroidEntryPoint
 import ru.netology.nmedia.R
+import ru.netology.nmedia.auth.AppAuth
 import ru.netology.nmedia.databinding.FragmentRegisterBinding
 import ru.netology.nmedia.dto.MediaUpload
 import ru.netology.nmedia.utils.AndroidUtils
 import ru.netology.nmedia.viewmodel.RegisterViewModel
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class RegisterFragment : Fragment() {
-    private val viewModel: RegisterViewModel by viewModels(
-        ownerProducer = ::requireParentFragment
-    )
+
+    @Inject
+    lateinit var auth: AppAuth
+
+    private val viewModel: RegisterViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -54,15 +60,16 @@ class RegisterFragment : Fragment() {
                 }
                 viewModel.avatar.value?.file == null -> {
                     viewModel.register(login, pass, name)
-                    AndroidUtils.hideKeyboard(requireView())
-                    findNavController().navigateUp()
                 }
                 else -> {
                     val media = viewModel.avatar.value?.file?.let { MediaUpload(it) }
                     media?.let { viewModel.registerWithPhoto(login, pass, name, media) }
-                    AndroidUtils.hideKeyboard(requireView())
-                    findNavController().navigateUp()
                 }
+            }
+            viewModel.data.observe(viewLifecycleOwner) {
+                auth.setAuth(it.id, it.token)
+                AndroidUtils.hideKeyboard(requireView())
+                findNavController().navigateUp()
             }
 
         }

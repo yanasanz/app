@@ -1,23 +1,28 @@
 package ru.netology.nmedia.viewmodel
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import ru.netology.nmedia.auth.AppAuth
-import ru.netology.nmedia.db.AppDb
+import ru.netology.nmedia.dto.UserCredentials
 import ru.netology.nmedia.repository.PostRepository
-import ru.netology.nmedia.repository.PostRepositoryImpl
+import java.lang.RuntimeException
+import javax.inject.Inject
 
-class SignInViewModel(application: Application) : AndroidViewModel(application) {
+@HiltViewModel
+class SignInViewModel @Inject constructor(private val repository: PostRepository) :
+    ViewModel() {
 
-        private val repository: PostRepository =
-            PostRepositoryImpl(AppDb.getInstance(context = application).postDao())
+    private val _data: MutableLiveData<UserCredentials> = MutableLiveData<UserCredentials>()
+    val data: LiveData<UserCredentials>
+        get() = _data
 
     fun signIn(login: String, pass: String) = viewModelScope.launch {
         val response = repository.signIn(login, pass)
-        response.token?.let{
-            AppAuth.getInstance().setAuth(response.id, response.token)
-        }
+        val body = response.token?.let { UserCredentials(response.id, it) }
+            ?: throw RuntimeException("Body is null")
+        _data.value = body
     }
 }

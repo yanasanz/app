@@ -1,35 +1,72 @@
-package ru.netology.nmedia.activity
+package ru.netology.nmedia.ui
 
 import android.app.Activity
 import android.net.Uri
 import android.os.Bundle
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.net.toFile
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.github.dhaval2404.imagepicker.ImagePicker
 import com.github.dhaval2404.imagepicker.constant.ImageProvider
 import com.google.android.material.snackbar.Snackbar
-import ru.netology.nmedia.databinding.FragmentAddAvatarBinding
-import ru.netology.nmedia.viewmodel.RegisterViewModel
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import ru.netology.nmedia.R
+import ru.netology.nmedia.databinding.FragmentNewPostBinding
+import ru.netology.nmedia.util.StringArg
+import ru.netology.nmedia.utils.AndroidUtils
+import ru.netology.nmedia.viewmodel.PostViewModel
 
+@AndroidEntryPoint
+@ExperimentalCoroutinesApi
+class NewPostFragment : Fragment() {
+    private val viewModel: PostViewModel by viewModels()
 
-class AddAvatarFragment : Fragment() {
-    private val viewModel: RegisterViewModel by viewModels(
-        ownerProducer = ::requireParentFragment
-    )
+    companion object {
+        var Bundle.textArg: String? by StringArg
+    }
+
+    private var fragmentBinding: FragmentNewPostBinding? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.menu_new_post, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.save -> {
+                fragmentBinding?.let {
+                    viewModel.changeContent(it.edit.text.toString())
+                        viewModel.save()
+                        AndroidUtils.hideKeyboard(requireView())
+                }
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+
+        }
+
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val binding = FragmentAddAvatarBinding.inflate(inflater, container, false)
+        val binding = FragmentNewPostBinding.inflate(inflater, container, false)
+        fragmentBinding = binding
 
+        arguments?.textArg?.let(binding.edit::setText)
+
+        binding.edit.requestFocus()
 
         val pickPhotoLauncher =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -43,7 +80,7 @@ class AddAvatarFragment : Fragment() {
                     }
                     Activity.RESULT_OK -> {
                         val uri: Uri? = it.data?.data
-                        viewModel.changeAvatar(uri, uri?.toFile())
+                        viewModel.changePhoto(uri, uri?.toFile())
                     }
                 }
             }
@@ -71,14 +108,15 @@ class AddAvatarFragment : Fragment() {
         }
 
         binding.removePhoto.setOnClickListener {
-            viewModel.changeAvatar(null, null)
+            viewModel.changePhoto(null, null)
         }
 
-        binding.savePhoto.setOnClickListener {
+        viewModel.postCreated.observe(viewLifecycleOwner) {
+            //viewModel.loadPosts()
             findNavController().navigateUp()
         }
 
-        viewModel.avatar.observe(viewLifecycleOwner) {
+        viewModel.photo.observe(viewLifecycleOwner) {
             if (it.uri == null) {
                 binding.photoContainer.visibility = View.GONE
                 return@observe
@@ -86,6 +124,12 @@ class AddAvatarFragment : Fragment() {
             binding.photoContainer.visibility = View.VISIBLE
             binding.photo.setImageURI(it.uri)
         }
+
         return binding.root
+    }
+
+    override fun onDestroyView() {
+        fragmentBinding = null
+        super.onDestroyView()
     }
 }
