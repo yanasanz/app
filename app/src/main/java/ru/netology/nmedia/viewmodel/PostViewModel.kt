@@ -36,7 +36,7 @@ private val empty = Post(
 private val noPhoto = PhotoModel()
 
 @HiltViewModel
-@ExperimentalCoroutinesApi
+@OptIn(ExperimentalCoroutinesApi::class)
 class PostViewModel @Inject constructor(
     private val repository: PostRepository,
     auth: AppAuth,
@@ -112,7 +112,6 @@ class PostViewModel @Inject constructor(
 
     fun save() {
         edited.value?.let {
-            _postCreated.value = Unit
             viewModelScope.launch {
                 try {
                     when (_photo.value) {
@@ -121,7 +120,7 @@ class PostViewModel @Inject constructor(
                             repository.saveWithAttachment(it, MediaUpload(file))
                         }
                     }
-                    _dataState.value = FeedModelState()
+                    _postCreated.value = Unit
                 } catch (e: Exception) {
                     _dataState.value = FeedModelState(error = true)
                 }

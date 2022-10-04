@@ -12,8 +12,11 @@ import dagger.hilt.android.AndroidEntryPoint
 import ru.netology.nmedia.R
 import ru.netology.nmedia.auth.AppAuth
 import ru.netology.nmedia.databinding.FragmentSignInBinding
+import ru.netology.nmedia.repository.PostRepository
 import ru.netology.nmedia.utils.AndroidUtils
+import ru.netology.nmedia.viewmodel.PostViewModel
 import ru.netology.nmedia.viewmodel.SignInViewModel
+import ru.netology.nmedia.viewmodel.ViewModelFactory
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -21,7 +24,15 @@ class SignInFragment : Fragment() {
 
     @Inject
     lateinit var auth: AppAuth
-    private val viewModel: SignInViewModel by viewModels()
+    @Inject
+    lateinit var repository: PostRepository
+
+    private val viewModel: SignInViewModel by viewModels(
+        ownerProducer = ::requireParentFragment,
+        factoryProducer = {
+            ViewModelFactory(repository, auth)
+        }
+    )
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -42,9 +53,6 @@ class SignInFragment : Fragment() {
                     .show()
             } else {
                 viewModel.signIn(login, pass)
-            }
-            viewModel.data.observe(viewLifecycleOwner) {
-                auth.setAuth(it.id, it.token)
                 AndroidUtils.hideKeyboard(requireView())
                 findNavController().navigateUp()
             }

@@ -21,7 +21,9 @@ import ru.netology.nmedia.error.NetworkError
 import ru.netology.nmedia.error.UnknownError
 import java.io.IOException
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class PostRepositoryImpl @Inject constructor(
     private val dao: PostDao,
     private val apiService: ApiService
@@ -127,7 +129,8 @@ class PostRepositoryImpl @Inject constructor(
             }
             val body = response.body() ?: throw ApiError(response.code(), response.message())
             dao.insert(body.toEntity())
-            emit(body.size)
+            val newPosts = dao.getNewer()
+            emit(newPosts.size)
         }
     }
         .catch { e -> throw AppError.from(e) }

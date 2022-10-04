@@ -19,8 +19,10 @@ import ru.netology.nmedia.adapter.PostInteractionListener
 import ru.netology.nmedia.auth.AppAuth
 import ru.netology.nmedia.databinding.FragmentFeedBinding
 import ru.netology.nmedia.dto.Post
+import ru.netology.nmedia.repository.PostRepository
 import ru.netology.nmedia.util.DialogManager
 import ru.netology.nmedia.viewmodel.PostViewModel
+import ru.netology.nmedia.viewmodel.ViewModelFactory
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -28,8 +30,15 @@ import javax.inject.Inject
 class FeedFragment : Fragment() {
     @Inject
     lateinit var auth: AppAuth
+    @Inject
+    lateinit var repository: PostRepository
 
-    private val viewModel: PostViewModel by viewModels()
+    private val viewModel: PostViewModel by viewModels(
+        ownerProducer = ::requireParentFragment,
+        factoryProducer = {
+            ViewModelFactory(repository, auth)
+        }
+    )
 
     override fun onCreateView(
         inflater: LayoutInflater,

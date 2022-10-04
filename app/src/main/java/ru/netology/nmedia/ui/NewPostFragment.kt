@@ -15,15 +15,30 @@ import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import ru.netology.nmedia.R
+import ru.netology.nmedia.auth.AppAuth
 import ru.netology.nmedia.databinding.FragmentNewPostBinding
+import ru.netology.nmedia.repository.PostRepository
 import ru.netology.nmedia.util.StringArg
 import ru.netology.nmedia.utils.AndroidUtils
 import ru.netology.nmedia.viewmodel.PostViewModel
+import ru.netology.nmedia.viewmodel.ViewModelFactory
+import javax.inject.Inject
 
 @AndroidEntryPoint
 @ExperimentalCoroutinesApi
 class NewPostFragment : Fragment() {
-    private val viewModel: PostViewModel by viewModels()
+
+    @Inject
+    lateinit var auth: AppAuth
+    @Inject
+    lateinit var repository: PostRepository
+
+    private val viewModel: PostViewModel by viewModels(
+        ownerProducer = ::requireParentFragment,
+        factoryProducer = {
+            ViewModelFactory(repository, auth)
+        }
+    )
 
     companion object {
         var Bundle.textArg: String? by StringArg

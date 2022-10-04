@@ -16,8 +16,10 @@ import dagger.hilt.android.AndroidEntryPoint
 import ru.netology.nmedia.R
 import ru.netology.nmedia.ui.NewPostFragment.Companion.textArg
 import ru.netology.nmedia.auth.AppAuth
+import ru.netology.nmedia.repository.PostRepository
 import ru.netology.nmedia.util.DialogManager
 import ru.netology.nmedia.viewmodel.AuthViewModel
+import ru.netology.nmedia.viewmodel.ViewModelFactory
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -25,6 +27,8 @@ class AppActivity : AppCompatActivity(R.layout.activity_app) {
 
     @Inject
     lateinit var auth: AppAuth
+    @Inject
+    lateinit var repository: PostRepository
 
     @Inject
     lateinit var googleApiAvailability: GoogleApiAvailability
@@ -32,7 +36,11 @@ class AppActivity : AppCompatActivity(R.layout.activity_app) {
     @Inject
     lateinit var firebaseMessaging: FirebaseMessaging
 
-    private val viewModel: AuthViewModel by viewModels()
+    private val viewModel: AuthViewModel by viewModels(
+        factoryProducer = {
+            ViewModelFactory(repository, auth)
+        }
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
