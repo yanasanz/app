@@ -1,23 +1,24 @@
 package ru.netology.nmedia.viewmodel
 
-import android.app.Application
 import android.net.Uri
 import androidx.lifecycle.*
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import ru.netology.nmedia.auth.AppAuth
-import ru.netology.nmedia.db.AppDb
 import ru.netology.nmedia.dto.MediaUpload
 import ru.netology.nmedia.model.PhotoModel
 import ru.netology.nmedia.repository.PostRepository
-import ru.netology.nmedia.repository.PostRepositoryImpl
 import java.io.File
+import java.lang.RuntimeException
+import javax.inject.Inject
 
 private val noAvatar = PhotoModel()
 
-class RegisterViewModel(application: Application) : AndroidViewModel(application) {
-
-    private val repository: PostRepository =
-        PostRepositoryImpl(AppDb.getInstance(context = application).postDao())
+@HiltViewModel
+class RegisterViewModel @Inject constructor(
+    private val repository: PostRepository,
+    private val auth: AppAuth
+) : ViewModel() {
 
     private val _avatar = MutableLiveData(noAvatar)
     val avatar: LiveData<PhotoModel>
@@ -26,7 +27,7 @@ class RegisterViewModel(application: Application) : AndroidViewModel(application
     fun register(login: String, pass: String, name: String) = viewModelScope.launch {
         val response = repository.register(login, pass, name)
         response.token?.let {
-            AppAuth.getInstance().setAuth(response.id, response.token)
+            auth.setAuth(response.id, response.token)
         }
     }
 
@@ -34,7 +35,7 @@ class RegisterViewModel(application: Application) : AndroidViewModel(application
         viewModelScope.launch {
             val response = repository.registerWithPhoto(login, pass, name, media)
             response.token?.let {
-                AppAuth.getInstance().setAuth(response.id, response.token)
+                auth.setAuth(response.id, response.token)
             }
         }
 

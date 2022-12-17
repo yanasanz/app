@@ -9,21 +9,27 @@ import androidx.core.app.NotificationManagerCompat
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.google.gson.Gson
+import dagger.hilt.android.AndroidEntryPoint
 import ru.netology.nmedia.R
+import ru.netology.nmedia.auth.AppAuth
+import javax.inject.Inject
 import kotlin.random.Random
 
-class FCMService : FirebaseMessagingService() {
+@AndroidEntryPoint
+class FCMService() : FirebaseMessagingService() {
+    @Inject
+    lateinit var auth: AppAuth
+
     private val action = "action"
     private val content = "content"
     private val likesChannelId = "like"
     private val newPostsChannelId = "newPost"
+    private val pushTokenChannelId = "pushToken"
     private val gson = Gson()
 
     override fun onCreate() {
         super.onCreate()
-
         createNewNotificationChannels()
-
     }
 
     override fun onMessageReceived(message: RemoteMessage) {
@@ -41,21 +47,33 @@ class FCMService : FirebaseMessagingService() {
                         NewPost::class.java
                     )
                 )
+                pushTokenChannelId -> {
+                    val body = gson.fromJson(message.data[content], Push::class.java)
+                    val myId = auth.authStateFlow.value.id.toString()
+                    when {
+                        body.recipientId == myId || body.recipientId == null -> handlePush(body)
+                        body.recipientId == "0" && body.recipientId != myId -> auth.sendPushToken()
+                        body.recipientId != "0" && body.recipientId != myId -> auth.sendPushToken()
+                        else -> auth.sendPushToken()
+                    }
+                }
                 else -> return@let
             }
         }
     }
 
     override fun onNewToken(token: String) {
-        println(token)
+        auth.sendPushToken(token)
     }
 
     private fun createNewNotificationChannels() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val likesChannelName = getString(R.string.channel_likes_name)
             val newPostsChannelName = getString(R.string.channel_new_posts_name)
+            val pushTokenChannelName = getString(R.string.channel_push_token_name)
             val likesChannelDescriptionText = getString(R.string.channel_likes_description)
             val newPostsChannelDescriptionText = getString(R.string.channel_likes_description)
+            val pushTokenChannelDescriptionText = getString(R.string.channel_push_token_description)
             val importance = NotificationManager.IMPORTANCE_DEFAULT
             val likesChannel =
                 NotificationChannel(likesChannelId, likesChannelName, importance).apply {
@@ -64,6 +82,10 @@ class FCMService : FirebaseMessagingService() {
             val newPostsChannel =
                 NotificationChannel(newPostsChannelId, newPostsChannelName, importance).apply {
                     description = newPostsChannelDescriptionText
+                }
+            val PushChannel =
+                NotificationChannel(pushTokenChannelId, pushTokenChannelName, importance).apply {
+                    description = pushTokenChannelDescriptionText
                 }
             val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             manager.createNotificationChannel(likesChannel)
@@ -109,6 +131,17 @@ class FCMService : FirebaseMessagingService() {
         NotificationManagerCompat.from(this)
             .notify(Random.nextInt(100_000), notification)
     }
+
+    private fun handlePush(push: Push) {
+        val notification = NotificationCompat.Builder(this, pushTokenChannelId)
+            .setSmallIcon(R.drawable.ic_notification)
+            .setContentText(push.content)
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .build()
+
+        NotificationManagerCompat.from(this)
+            .notify(Random.nextInt(100_000), notification)
+    }
 }
 
 data class Like(
@@ -123,4 +156,9 @@ data class NewPost(
     val userName: String,
     val postId: Long,
     val postContent: String
+)
+
+data class Push(
+    val recipientId: String?,
+    val content: String
 )

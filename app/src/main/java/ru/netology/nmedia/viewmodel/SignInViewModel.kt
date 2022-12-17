@@ -1,23 +1,23 @@
 package ru.netology.nmedia.viewmodel
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import ru.netology.nmedia.auth.AppAuth
-import ru.netology.nmedia.db.AppDb
 import ru.netology.nmedia.repository.PostRepository
-import ru.netology.nmedia.repository.PostRepositoryImpl
+import javax.inject.Inject
 
-class SignInViewModel(application: Application) : AndroidViewModel(application) {
-
-        private val repository: PostRepository =
-            PostRepositoryImpl(AppDb.getInstance(context = application).postDao())
+@HiltViewModel
+class SignInViewModel @Inject constructor(
+    private val repository: PostRepository,
+    private val auth: AppAuth
+) : ViewModel() {
 
     fun signIn(login: String, pass: String) = viewModelScope.launch {
         val response = repository.signIn(login, pass)
-        response.token?.let{
-            AppAuth.getInstance().setAuth(response.id, response.token)
+        response.token?.let {
+            auth.setAuth(response.id, response.token)
         }
     }
 }

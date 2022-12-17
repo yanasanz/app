@@ -1,8 +1,8 @@
 package ru.netology.nmedia.viewmodel
 
-import android.app.Application
 import android.net.Uri
 import androidx.lifecycle.*
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.catch
@@ -10,7 +10,6 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import ru.netology.nmedia.auth.AppAuth
-import ru.netology.nmedia.db.AppDb
 import ru.netology.nmedia.dto.MediaUpload
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.model.FeedModelState
@@ -18,6 +17,8 @@ import ru.netology.nmedia.model.PhotoModel
 import ru.netology.nmedia.repository.*
 import ru.netology.nmedia.util.SingleLiveEvent
 import java.io.File
+import javax.inject.Inject
+import androidx.lifecycle.ViewModel
 
 private val empty = Post(
     id = 0L,
@@ -34,14 +35,14 @@ private val empty = Post(
 
 private val noPhoto = PhotoModel()
 
-class PostViewModel(application: Application) : AndroidViewModel(application) {
+@HiltViewModel
+@OptIn(ExperimentalCoroutinesApi::class)
+class PostViewModel @Inject constructor(
+    private val repository: PostRepository,
+    auth: AppAuth,
+) : ViewModel() {
 
-    private val repository: PostRepository =
-        PostRepositoryImpl(AppDb.getInstance(context = application).postDao())
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    val data: LiveData<FeedModel> = AppAuth.getInstance()
-        .authStateFlow
+    val data: LiveData<FeedModel> = auth.authStateFlow
         .flatMapLatest { (myId, _) ->
             repository.data
                 .map { posts ->
@@ -111,7 +112,6 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
 
     fun save() {
         edited.value?.let {
-            _postCreated.value = Unit
             viewModelScope.launch {
                 try {
                     when (_photo.value) {
@@ -120,7 +120,7 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
                             repository.saveWithAttachment(it, MediaUpload(file))
                         }
                     }
-                    _dataState.value = FeedModelState()
+                    _postCreated.value = Unit
                 } catch (e: Exception) {
                     _dataState.value = FeedModelState(error = true)
                 }

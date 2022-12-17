@@ -1,4 +1,4 @@
-package ru.netology.nmedia.activity
+package ru.netology.nmedia.ui
 
 import android.app.Activity
 import android.net.Uri
@@ -12,16 +12,32 @@ import androidx.navigation.fragment.findNavController
 import com.github.dhaval2404.imagepicker.ImagePicker
 import com.github.dhaval2404.imagepicker.constant.ImageProvider
 import com.google.android.material.snackbar.Snackbar
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import ru.netology.nmedia.R
+import ru.netology.nmedia.auth.AppAuth
 import ru.netology.nmedia.databinding.FragmentNewPostBinding
+import ru.netology.nmedia.repository.PostRepository
 import ru.netology.nmedia.util.StringArg
 import ru.netology.nmedia.utils.AndroidUtils
 import ru.netology.nmedia.viewmodel.PostViewModel
+import ru.netology.nmedia.viewmodel.ViewModelFactory
+import javax.inject.Inject
 
+@AndroidEntryPoint
+@ExperimentalCoroutinesApi
 class NewPostFragment : Fragment() {
 
+    @Inject
+    lateinit var auth: AppAuth
+    @Inject
+    lateinit var repository: PostRepository
+
     private val viewModel: PostViewModel by viewModels(
-        ownerProducer = ::requireParentFragment
+        ownerProducer = ::requireParentFragment,
+        factoryProducer = {
+            ViewModelFactory(repository, auth)
+        }
     )
 
     companion object {
@@ -44,13 +60,15 @@ class NewPostFragment : Fragment() {
             R.id.save -> {
                 fragmentBinding?.let {
                     viewModel.changeContent(it.edit.text.toString())
-                    viewModel.save()
-                    AndroidUtils.hideKeyboard(requireView())
+                        viewModel.save()
+                        AndroidUtils.hideKeyboard(requireView())
                 }
                 true
             }
             else -> super.onOptionsItemSelected(item)
+
         }
+
     }
 
     override fun onCreateView(
@@ -113,8 +131,8 @@ class NewPostFragment : Fragment() {
             findNavController().navigateUp()
         }
 
-        viewModel.photo.observe(viewLifecycleOwner){
-            if(it.uri == null){
+        viewModel.photo.observe(viewLifecycleOwner) {
+            if (it.uri == null) {
                 binding.photoContainer.visibility = View.GONE
                 return@observe
             }

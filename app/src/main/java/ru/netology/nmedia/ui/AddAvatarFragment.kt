@@ -1,4 +1,4 @@
-package ru.netology.nmedia.activity
+package ru.netology.nmedia.ui
 
 import android.app.Activity
 import android.net.Uri
@@ -14,13 +14,27 @@ import androidx.navigation.fragment.findNavController
 import com.github.dhaval2404.imagepicker.ImagePicker
 import com.github.dhaval2404.imagepicker.constant.ImageProvider
 import com.google.android.material.snackbar.Snackbar
+import dagger.hilt.android.AndroidEntryPoint
+import ru.netology.nmedia.auth.AppAuth
 import ru.netology.nmedia.databinding.FragmentAddAvatarBinding
+import ru.netology.nmedia.repository.PostRepository
 import ru.netology.nmedia.viewmodel.RegisterViewModel
+import ru.netology.nmedia.viewmodel.ViewModelFactory
+import javax.inject.Inject
 
-
+@AndroidEntryPoint
 class AddAvatarFragment : Fragment() {
+
+    @Inject
+    lateinit var auth: AppAuth
+    @Inject
+    lateinit var repository: PostRepository
+
     private val viewModel: RegisterViewModel by viewModels(
-        ownerProducer = ::requireParentFragment
+        ownerProducer = ::requireParentFragment,
+        factoryProducer = {
+            ViewModelFactory(repository, auth)
+        }
     )
 
     override fun onCreateView(
